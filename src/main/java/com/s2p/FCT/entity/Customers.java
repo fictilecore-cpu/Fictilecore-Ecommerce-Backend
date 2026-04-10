@@ -1,122 +1,58 @@
 package com.s2p.FCT.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.s2p.FCT.model.CustomerAddress;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
-// import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-// import org.hibernate.annotations.GenericGenerator;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.s2p.FCT.model.CustomerAddress;
-
-import jakarta.persistence.CascadeType;
-// import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-// import jakarta.persistence.GeneratedValue;
-// import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-// import jakarta.persistence.OneToOne;
-
+@Getter
+@Setter
 @Entity
+@Table(name = "customers", indexes = @Index(name = "idx_customer_email", columnList = "email"))
 public class Customers {
-	
-	 	@Id		
-	    private UUID id;
 
-	    private String firstName;
-	    private String lastName;
-	    private String email;
-	    private String password;
-	    private String phoneNumber;
-		private String Role;
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, updatable = false)
+    private UUID id;
 
-	  // @OneToOne(mappedBy = "customers", cascade = CascadeType.ALL, orphanRemoval = true)
-	  @OneToMany(mappedBy = "customers", cascade = CascadeType.ALL, orphanRemoval = true)
-	    private List<CustomerAddress> address = new ArrayList<>();
+    @Column(nullable = false, length = 100)
+    private String firstName;
 
-	    public List<CustomerAddress> getAddress() {
-			return address;
-		}
+    @Column(nullable = false, length = 100)
+    private String lastName;
 
-		public void setAddress(List<CustomerAddress> address) {
-			this.address = address;
-		}
+    @Column(nullable = false, unique = true, length = 150)
+    private String email;
 
-		@OneToMany(mappedBy = "customers", cascade = CascadeType.ALL)
-	    @JsonIgnore
-	    private List<Order> orders;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(nullable = false)
+    private String password;
 
-		public UUID getId() {
-			return id;
-		}
+    @Column(nullable = false, length = 20)
+    private String phoneNumber;
 
-		public void setId(UUID id) {
-			this.id = id;
-		}
+    @Column(nullable = false, length = 20)
+    private String role = "USER"; // USER or ADMIN
 
-		public String getFirstName() {
-			return firstName;
-		}
+    // ================= ADDRESS RELATION =================
 
-		public void setFirstName(String firstName) {
-			this.firstName = firstName;
-		}
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<CustomerAddress> addresses = new ArrayList<>();
 
-		public String getLastName() {
-			return lastName;
-		}
+    // ================= ORDER RELATION =================
 
-		public void setLastName(String lastName) {
-			this.lastName = lastName;
-		}
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Order> orders = new ArrayList<>();
 
-		public String getEmail() {
-			return email;
-		}
-
-		public void setEmail(String email) {
-			this.email = email;
-		}
-
-		public String getPassword() {
-			return password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-
-		public String getPhoneNumber() {
-			return phoneNumber;
-		}
-
-		public void setPhoneNumber(String phoneNumber) {
-			this.phoneNumber = phoneNumber;
-		}
-
-	
-
-
-		public List<Order> getOrders() {
-			return orders;
-		}
-
-		public void setOrders(List<Order> orders) {
-			this.orders = orders;
-		}
-		    
-
-		  public String getRole() {
-			return Role;
-		}
-
-		public void setRole(String role) {
-			Role = "role";
-		}
-		
-	
+    // ================= GETTERS & SETTERS =================
 
 }

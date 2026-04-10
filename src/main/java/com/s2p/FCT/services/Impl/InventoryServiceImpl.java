@@ -10,11 +10,14 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.s2p.FCT.entity.Inventory;
 import com.s2p.FCT.repositories.InventoryRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class InventoryServiceImpl {
@@ -76,6 +79,12 @@ private final String BASE_UPLOAD_DIR = "/home/santosh/Backend/NewBackend/uploads
         return inventoryRepository.findAll();
     }
 
+
+    public Page<Inventory> getProducts(int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    return inventoryRepository.findAll(pageable);
+    }
+
     /**
      * Get product by ID
      * @param id UUID of product
@@ -84,5 +93,27 @@ private final String BASE_UPLOAD_DIR = "/home/santosh/Backend/NewBackend/uploads
     public Inventory getCheckoutProductById(UUID id) {
         return inventoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
+    }
+
+
+
+    public  void InventoryService(InventoryRepository inventoryRepository) {
+        this.inventoryRepository = inventoryRepository;
+    }
+
+    public List<Inventory> searchProducts(String query) {
+        if (query == null || query.isBlank()) {
+            return new ArrayList<>();
+        }
+
+        String[] keywords = query.trim().split("\\s+");
+        List<Inventory> results = new ArrayList<>();
+
+        for (String keyword : keywords) {
+            results.addAll(inventoryRepository.searchByName(keyword));
+        }
+
+        // Remove duplicates if multiple keywords match same product
+        return results.stream().distinct().toList();
     }
 }

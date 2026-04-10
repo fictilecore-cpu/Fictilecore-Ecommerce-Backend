@@ -24,7 +24,7 @@ public class CustomerAddressService {
         Customers customer = customersRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        address.setCustomers(customer); // link the address to the customer
+        address.setCustomer(customer); // link the address to the customer
         return addressRepository.save(address); // return the saved address
     }
 

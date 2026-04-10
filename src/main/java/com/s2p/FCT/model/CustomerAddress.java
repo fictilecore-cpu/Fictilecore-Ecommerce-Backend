@@ -1,51 +1,72 @@
 package com.s2p.FCT.model;
 
-import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.s2p.FCT.entity.Customers;
+
 import jakarta.persistence.*;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "customer_address")
 public class CustomerAddress {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @GeneratedValue
+    @Column(nullable = false, updatable = false)
     private UUID id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String phone;
+
     private String alternatePhone;
+
+    @Column(nullable = false)
     private String pincode;
+
+    @Column(nullable = false)
     private String locality;
+
+    @Column(nullable = false)
     private String street;
+
+    @Column(nullable = false)
     private String city;
+
+    @Column(nullable = false)
     private String state;
+
     private String landmark;
-    private String addressType;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @Column(nullable = false)
+    private String addressType;  // HOME / WORK
+
+    // ================= RELATION =================
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
     @JsonIgnore
-    private Customers customers;
+    private Customers customer;
 
-    // Correct setter
-    public void setCustomers(Customers customers) {
-        this.customers = customers;
-    }
+    // ================= GETTERS & SETTERS =================
 
-    public Customers getCustomers() {
-        return customers;
-    }
-
-    // Getters & Setters for all fields
     public UUID getId() {
         return id;
     }
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public Customers getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customers customer) {
+        this.customer = customer;
     }
 
     public String getName() {
@@ -127,6 +148,4 @@ public class CustomerAddress {
     public void setAddressType(String addressType) {
         this.addressType = addressType;
     }
-
-    // REMOVE isEmpty() entirely
 }

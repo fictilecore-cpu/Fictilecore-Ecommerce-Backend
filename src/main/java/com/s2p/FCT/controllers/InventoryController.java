@@ -1,7 +1,6 @@
 package com.s2p.FCT.controllers;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -14,11 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+    import org.springframework.data.domain.Page;
 import com.s2p.FCT.entity.Inventory;
 import com.s2p.FCT.services.Impl.InventoryServiceImpl;
 
-@CrossOrigin(origins = "*") //This is updated code
 @RestController
 @RequestMapping("/api")
 public class InventoryController {
@@ -53,6 +51,17 @@ public class InventoryController {
         return ResponseEntity.ok(products);
     }
 
+
+
+@GetMapping("/products/page")
+public ResponseEntity<Page<Inventory>> getProducts(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "8") int size) {
+
+    Page<Inventory> products = inventoryService.getProducts(page, size);
+    return ResponseEntity.ok(products);
+}
+
     // --- Get Product by ID for Checkout ---
     @GetMapping("/checkout/{id}")
     public ResponseEntity<Inventory> getCheckoutProduct(@PathVariable UUID id) {
@@ -83,5 +92,22 @@ public class InventoryController {
 
         return ResponseEntity.ok(imagePaths);
     }
+
+
+
+    public InventoryController(InventoryServiceImpl inventoryService) {
+        this.inventoryService = inventoryService;
+    }
+
+    // GET /api/products/search?query=red+toy
+    @GetMapping("/search")
+    public List<Inventory> searchProducts(@RequestParam("query") String query) {
+        return inventoryService.searchProducts(query);
+    }
+
+
+
+
+
 }
 
